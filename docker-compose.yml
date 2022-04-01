@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+  postgres:
+    image: postgres:13.2-alpine
+    restart: always
+    volumes:
+      - server-app:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+
+  api:
+    depends_on:
+      - postgres
+    build:
+      target: development
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+      - ./:/usr/src/app
+    ports:
+      - 3000:3000
+    command: npm run start:dev
+    env_file:
+      - .env
+
+volumes:
+  server-app:
+  node_modules:
